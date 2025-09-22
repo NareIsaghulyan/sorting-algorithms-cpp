@@ -1,5 +1,5 @@
 #include "sorting.h"
-
+// implement swap function because it is used a lot; 
 void bubbleSort(int* arr, int size){
     int temp, pass, i; 
     for(pass = 0; pass < size - 1; ++pass){
@@ -84,5 +84,101 @@ void mergeSort(int* arr, int size){
     delete [] leftArr; 
     delete [] rightArr; 
 }
-void quickSort(){}
-void heapSort(){}
+
+int partition(int* arr, int size){
+    int temp, pivot, i = 0, j = size - 2; 
+
+    if(arr[0] < arr[size/2]){
+        temp = arr[0]; 
+        arr[0] = arr[size/2]; 
+        arr[size/2] = temp; 
+    }
+
+    if(arr[0] < arr[size - 1]){
+        temp = arr[0]; 
+        arr[0] = arr[size - 1]; 
+        arr[size - 1] = temp; 
+    }
+
+    if(arr[size/2] < arr[size - 1]){
+        temp = arr[size/2]; 
+        arr[size/2] = arr[size - 1]; 
+        arr[size - 1] = temp; 
+    }
+
+    pivot = arr[size/2]; 
+
+    temp = arr[size/2]; 
+    arr[size/2] = arr[size - 1]; 
+    arr[size - 1] = temp; 
+
+    while(i < j){
+        while(arr[i] < pivot){
+            ++i; 
+        }
+
+        while(arr[j] > pivot){
+            --j;
+        }
+
+        if(i < j){
+            temp = arr[i]; 
+            arr[i] = arr[j]; 
+            arr[j] = temp; 
+        }
+    }
+
+    temp = arr[i]; 
+    arr[i] = arr[size - 1]; 
+    arr[size - 1] = temp; 
+
+    return i; 
+}
+void quickSort(int* arr, int size){
+    if(size <= 1) return; 
+
+    int pivotIndex = partition(arr, size); 
+
+    quickSort(arr, pivotIndex); 
+    quickSort(arr + pivotIndex + 1, size - pivotIndex - 1); 
+
+}
+
+void percolateDown(int* arr, int curr, int size){
+    while(true){
+        int maxIndex = curr;
+        int left = 2 * curr + 1;
+        int right = 2 * curr + 2;
+
+        if(left < size && arr[left] > arr[maxIndex]) maxIndex = left;
+        if(right < size && arr[right] > arr[maxIndex]) maxIndex = right;
+
+        if(maxIndex == curr) break;
+
+        int temp = arr[curr];
+        arr[curr] = arr[maxIndex];
+        arr[maxIndex] = temp;
+
+        curr = maxIndex;
+    }
+}
+
+void heapify(int* arr, int size){
+    for(int k = size / 2 - 1; k >= 0; --k) 
+        percolateDown(arr, k, size);
+}
+
+
+void heapSort(int* arr, int size){
+    if(size <= 1) return;
+
+    heapify(arr, size);
+
+    for(int i = size - 1; i > 0; --i){
+        int temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+
+        percolateDown(arr, 0, i);
+    }
+}
